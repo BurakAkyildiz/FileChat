@@ -1,11 +1,11 @@
 # FileChat
-File transfer and Chat application for local or remote networks.
+File transfer and Chat application for local or remote networks
 ---------------------------------------------------------------
 Simply create a room and share your server ip and port with your friends. They can enter your room... 
 You can chat with them and share any file directly from your pc to your friends pc.
 Because of the simplicity there is no user limit or file limit. If you create a server the limit is your pc and users network.
 
- You can create a local server or remote server. 
+ You can create a local server or remote server
 ---------------------------------------------------------------
 The server's role is just notifying users. Redirecting download and upload requests to clients, publish chat messages, post system information messages.
 
@@ -15,7 +15,7 @@ If you want to create a local server you just need to select a free port on your
 When you create a room you can see your ip on aplicatons windows title so you can share it with you friends.
 
 
- You can Connect a server.
+ You can Connect a server
 -----------------------------------------------------------------
 When you connect a server you can do same things like server.
 You can share any files, send messages, download and upload files.
@@ -36,7 +36,7 @@ Features
 -You can search shared files from table dynamicly.
 
 
---> Behavior
+Behavior
 -------------------------------------------------------------------
 The main attribute is, file chat will upload files one by one to clients. If downloader disconnects passes next upload on queue.
 There is no download limit you can download any shared file at the same time. But you need to wait your turn to download.
