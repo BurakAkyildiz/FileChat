@@ -41,9 +41,10 @@ public class Server implements Runnable,FileChatConstants
      * @param sName
      * @param chatPort
      * @param filePort
+     * @param svIP
      * @throws Exception 
      */
-    public Server(String sName,int chatPort,int filePort ) throws Exception
+    public Server(String sName,String svIP,int chatPort,int filePort ) throws Exception
     {
         
         this.sName = sName;
@@ -52,7 +53,7 @@ public class Server implements Runnable,FileChatConstants
         
         try {
             
-            this.sIp = Tool.IPCheck();
+            this.sIp = svIP;
             if(sIp == null)
                 throw new Exception("Unknown Host ! Cant create Server...");
             

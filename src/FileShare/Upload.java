@@ -125,11 +125,13 @@ public class Upload extends Observable
             {
                 exceptionCounter +=3;
                 System.out.println("Exception counter :"+exceptionCounter);
+                e.printStackTrace();
             }
             catch(SocketException e)
             {
-                    exceptionCounter+=2;
-                    System.out.println("Exception counter :"+exceptionCounter+" "+e.getMessage());
+                exceptionCounter+=2;
+                System.out.println("Exception counter :"+exceptionCounter+" "+e.getMessage());
+                e.printStackTrace();
                     
             }
             catch (Exception e) {

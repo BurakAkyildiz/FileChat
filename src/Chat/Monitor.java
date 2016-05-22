@@ -1,14 +1,16 @@
 package Chat;
 
 import FileShare.DownloadViewer;
-import FileShare.CreateEditSharedFile;
-import FileShare.CreateNewSharedFile;
+import FileShare.Creator_SharedFileEditor;
+import FileShare.Creator_SharedFile;
 import FileShare.FileServer;
 import static Chat.FileChatConstants.*;
+import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.GridBagConstraints;
 import java.awt.GridBagLayout;
 import java.awt.Insets;
+import java.awt.Toolkit;
 import java.awt.event.KeyEvent;
 import java.io.File;
 import java.io.IOException;
@@ -55,6 +57,8 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
     ArrayList<DownloadViewer> dlViewList = null; // download viewer list.
     boolean isRemoteConnection = false; //Connection type of server.
     boolean isAnswered = false; // upload accepted answer
+    Creator_Client createNewClientGui = null; // Client-Server connection creator.
+    Creator_Server svCreater = null; // Server Creator.
     //-------------------------------------------------
 
     
@@ -71,7 +75,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
          */
         try {
             for (javax.swing.UIManager.LookAndFeelInfo info : javax.swing.UIManager.getInstalledLookAndFeels()) {
-                if ("Nimbus".equals(info.getName())) {
+                if ("Metal".equals(info.getName())) {
                     javax.swing.UIManager.setLookAndFeel(info.getClassName());
                     break;
                 }
@@ -83,7 +87,10 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         initComponents();
         
         setup();
-        txt_name.setDocument(Tool.getJTextFieldLimit(USER_NAME_LENGTH_LIMIT));
+        createNewClientGui = new Creator_Client(this);
+        svCreater = new Creator_Server(Monitor.this);
+        Dimension dim = Toolkit.getDefaultToolkit().getScreenSize();
+        this.setLocation(dim.width/2-this.getSize().width/2, dim.height/2-this.getSize().height/2);
     }
 
     
@@ -108,9 +115,9 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         tbl_SharedFileTable.setModel(dtm);
         
         cons_pnl_DownUp_View = new GridBagConstraints();
-        cons_pnl_DownUp_View.insets = new Insets(15, 0, 0, 0);
+        cons_pnl_DownUp_View.insets = new Insets(5, 0, 0, 0);
         cons_pnl_DownUp_View.fill = GridBagConstraints.HORIZONTAL;
-        cons_pnl_DownUp_View.anchor = GridBagConstraints.CENTER;
+        cons_pnl_DownUp_View.anchor = GridBagConstraints.FIRST_LINE_END;
         cons_pnl_DownUp_View.weightx = 1;
         cons_pnl_DownUp_View.gridx = 0;
         cons_pnl_DownUp_View.weighty = 1;
@@ -122,6 +129,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         GridBagLayout gLy = new GridBagLayout();
         pnl_DownUPView.setLayout(gLy);
         dlViewList = new ArrayList<DownloadViewer>();
+        
         
         new File(downloadFolder).mkdirs();
         System.out.println("Setup is Done !");
@@ -160,20 +168,10 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         tbl_SharedFileTable = new javax.swing.JTable();
         jScrollPane5 = new javax.swing.JScrollPane();
         pnl_DownUPView = new javax.swing.JPanel();
-        jPanel3 = new javax.swing.JPanel();
-        jLabel1 = new javax.swing.JLabel();
-        txt_Ip = new javax.swing.JTextField();
-        jLabel2 = new javax.swing.JLabel();
-        btn_Connect = new javax.swing.JButton();
-        jLabel3 = new javax.swing.JLabel();
-        txt_name = new javax.swing.JTextField();
-        prg_connect = new javax.swing.JProgressBar();
-        txt_port = new javax.swing.JFormattedTextField();
-        jLabel4 = new javax.swing.JLabel();
-        txt_filePort = new javax.swing.JFormattedTextField();
         jMenuBar1 = new javax.swing.JMenuBar();
         jMenu1 = new javax.swing.JMenu();
         menuItem_CreateRoom = new javax.swing.JMenuItem();
+        jMenuItem1 = new javax.swing.JMenuItem();
         menuItem_closeConnection = new javax.swing.JMenuItem();
         menuItem_EditMenu = new javax.swing.JMenu();
         menuItem_ChangeName = new javax.swing.JMenuItem();
@@ -243,18 +241,18 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
             pnl_ChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_ChatLayout.createSequentialGroup()
                 .addGroup(pnl_ChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane3, javax.swing.GroupLayout.DEFAULT_SIZE, 824, Short.MAX_VALUE)
-                    .addComponent(jScrollPane1))
+                    .addComponent(jScrollPane1, javax.swing.GroupLayout.DEFAULT_SIZE, 644, Short.MAX_VALUE)
+                    .addComponent(jScrollPane3))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnl_ChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
                     .addComponent(jScrollPane2, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
-                    .addComponent(sndButton, javax.swing.GroupLayout.DEFAULT_SIZE, 123, Short.MAX_VALUE)))
+                    .addComponent(sndButton, javax.swing.GroupLayout.DEFAULT_SIZE, 150, Short.MAX_VALUE)))
         );
         pnl_ChatLayout.setVerticalGroup(
             pnl_ChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(pnl_ChatLayout.createSequentialGroup()
                 .addGroup(pnl_ChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 442, Short.MAX_VALUE)
+                    .addComponent(jScrollPane2, javax.swing.GroupLayout.DEFAULT_SIZE, 422, Short.MAX_VALUE)
                     .addComponent(jScrollPane1))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnl_ChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
@@ -293,6 +291,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         btn_DownloadFile.setToolTipText("Download Selected Files");
         btn_DownloadFile.setMaximumSize(new java.awt.Dimension(57, 57));
         btn_DownloadFile.setMinimumSize(new java.awt.Dimension(57, 57));
+        btn_DownloadFile.setPreferredSize(new java.awt.Dimension(65, 53));
         btn_DownloadFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_DownloadFileActionPerformed(evt);
@@ -301,6 +300,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
 
         txt_SharedFileSearchText.setFont(new java.awt.Font("Verdana", 1, 18)); // NOI18N
         txt_SharedFileSearchText.setHorizontalAlignment(javax.swing.JTextField.LEFT);
+        txt_SharedFileSearchText.setPreferredSize(new java.awt.Dimension(6, 53));
         txt_SharedFileSearchText.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
                 txt_SharedFileSearchTextKeyTyped(evt);
@@ -312,6 +312,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         btn_DeleteFile.setToolTipText("Delete File");
         btn_DeleteFile.setMaximumSize(new java.awt.Dimension(57, 57));
         btn_DeleteFile.setMinimumSize(new java.awt.Dimension(57, 57));
+        btn_DeleteFile.setPreferredSize(new java.awt.Dimension(65, 41));
         btn_DeleteFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_DeleteFileActionPerformed(evt);
@@ -334,13 +335,14 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         btn_RefreshFileTable.setToolTipText("Refresh Table");
         btn_RefreshFileTable.setMaximumSize(new java.awt.Dimension(57, 57));
         btn_RefreshFileTable.setMinimumSize(new java.awt.Dimension(57, 57));
+        btn_RefreshFileTable.setPreferredSize(new java.awt.Dimension(65, 41));
         btn_RefreshFileTable.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 btn_RefreshFileTableActionPerformed(evt);
             }
         });
 
-        cmb_SearchType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Share Name", "Notification", "Size ( KB )", "User", "Share Time", "Files" }));
+        cmb_SearchType.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "Share Name", "Notification", "Size ( BYTE )", "User", "Share Time", "Files" }));
 
         jPanel2.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "UPLOAD PROGRESS", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         jPanel2.setMaximumSize(new java.awt.Dimension(32767, 69));
@@ -359,7 +361,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         jPanel2.setLayout(jPanel2Layout);
         jPanel2Layout.setHorizontalGroup(
             jPanel2Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(prg_upload_all, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+            .addComponent(prg_upload_all, javax.swing.GroupLayout.DEFAULT_SIZE, 417, Short.MAX_VALUE)
             .addComponent(prg_upload_curr, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
         );
         jPanel2Layout.setVerticalGroup(
@@ -367,8 +369,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
             .addGroup(jPanel2Layout.createSequentialGroup()
                 .addComponent(prg_upload_all, javax.swing.GroupLayout.PREFERRED_SIZE, 15, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addGap(0, 0, 0)
-                .addComponent(prg_upload_curr, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addGap(0, 0, 0))
+                .addComponent(prg_upload_curr, javax.swing.GroupLayout.PREFERRED_SIZE, 13, javax.swing.GroupLayout.PREFERRED_SIZE))
         );
 
         javax.swing.GroupLayout pnl_SharedFilesLayout = new javax.swing.GroupLayout(pnl_SharedFiles);
@@ -381,7 +382,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
                     .addGroup(pnl_SharedFilesLayout.createSequentialGroup()
                         .addComponent(cmb_SearchType, javax.swing.GroupLayout.PREFERRED_SIZE, 120, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_SharedFileSearchText))
+                        .addComponent(txt_SharedFileSearchText, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                     .addGroup(pnl_SharedFilesLayout.createSequentialGroup()
                         .addComponent(btn_AddNewFile, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                         .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
@@ -394,7 +395,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
                         .addComponent(btn_RefreshFileTable, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnl_SharedFilesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                    .addComponent(btn_DownloadFile, javax.swing.GroupLayout.PREFERRED_SIZE, 0, Short.MAX_VALUE)
+                    .addComponent(btn_DownloadFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btn_SelectAll, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addContainerGap())
         );
@@ -403,27 +404,24 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
             .addGroup(pnl_SharedFilesLayout.createSequentialGroup()
                 .addContainerGap()
                 .addGroup(pnl_SharedFilesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btn_DownloadFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(pnl_SharedFilesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.TRAILING)
-                        .addComponent(cmb_SearchType, javax.swing.GroupLayout.PREFERRED_SIZE, 56, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addComponent(txt_SharedFileSearchText, javax.swing.GroupLayout.PREFERRED_SIZE, 57, javax.swing.GroupLayout.PREFERRED_SIZE)))
+                    .addComponent(txt_SharedFileSearchText, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
+                    .addComponent(cmb_SearchType, javax.swing.GroupLayout.Alignment.TRAILING)
+                    .addComponent(btn_SelectAll, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addGroup(pnl_SharedFilesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(btn_SelectAll, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, pnl_SharedFilesLayout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addGroup(pnl_SharedFilesLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING, false)
-                            .addComponent(btn_AddNewFile, javax.swing.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
-                            .addComponent(btn_EditFile, javax.swing.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)
-                            .addComponent(btn_DeleteFile, javax.swing.GroupLayout.DEFAULT_SIZE, 57, Short.MAX_VALUE)))
+                    .addComponent(btn_AddNewFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btn_EditFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btn_DeleteFile, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
                     .addComponent(btn_RefreshFileTable, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jPanel2, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addContainerGap())
+                    .addComponent(jPanel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
+                    .addComponent(btn_DownloadFile, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
         );
 
         jScrollPane4.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "SHARED FILES", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
 
+        tbl_SharedFileTable.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         tbl_SharedFileTable.setFont(new java.awt.Font("Verdana", 1, 12)); // NOI18N
+        tbl_SharedFileTable.setForeground(new java.awt.Color(51, 51, 51));
         tbl_SharedFileTable.setModel(new javax.swing.table.DefaultTableModel(
             new Object [][] {
 
@@ -443,10 +441,13 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         tbl_SharedFileTable.setAutoscrolls(false);
         tbl_SharedFileTable.setCursor(new java.awt.Cursor(java.awt.Cursor.HAND_CURSOR));
         tbl_SharedFileTable.setFillsViewportHeight(true);
-        tbl_SharedFileTable.setGridColor(javax.swing.UIManager.getDefaults().getColor("Button.background"));
         tbl_SharedFileTable.setName("Shared File Table"); // NOI18N
         tbl_SharedFileTable.setRowHeight(30);
-        tbl_SharedFileTable.setRowMargin(7);
+        tbl_SharedFileTable.setRowMargin(2);
+        tbl_SharedFileTable.setSelectionForeground(new java.awt.Color(0, 0, 0));
+        tbl_SharedFileTable.setSelectionMode(javax.swing.ListSelectionModel.MULTIPLE_INTERVAL_SELECTION);
+        tbl_SharedFileTable.setShowHorizontalLines(true);
+        tbl_SharedFileTable.setShowVerticalLines(true);
         tbl_SharedFileTable.getTableHeader().setReorderingAllowed(false);
         tbl_SharedFileTable.addMouseListener(new java.awt.event.MouseAdapter() {
             public void mouseClicked(java.awt.event.MouseEvent evt) {
@@ -460,6 +461,8 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         });
         jScrollPane4.setViewportView(tbl_SharedFileTable);
 
+        jScrollPane5.setPreferredSize(new java.awt.Dimension(0, 0));
+
         pnl_DownUPView.setBorder(javax.swing.BorderFactory.createTitledBorder(null, "DOWNLOAD PROGRESS", javax.swing.border.TitledBorder.CENTER, javax.swing.border.TitledBorder.DEFAULT_POSITION));
         pnl_DownUPView.setMinimumSize(new java.awt.Dimension(500, 138));
 
@@ -467,11 +470,11 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         pnl_DownUPView.setLayout(pnl_DownUPViewLayout);
         pnl_DownUPViewLayout.setHorizontalGroup(
             pnl_DownUPViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 940, Short.MAX_VALUE)
+            .addGap(0, 766, Short.MAX_VALUE)
         );
         pnl_DownUPViewLayout.setVerticalGroup(
             pnl_DownUPViewLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGap(0, 180, Short.MAX_VALUE)
+            .addGap(0, 138, Short.MAX_VALUE)
         );
 
         jScrollPane5.setViewportView(pnl_DownUPView);
@@ -482,94 +485,23 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(pnl_SharedFiles, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jScrollPane4)
-            .addComponent(jScrollPane5)
+            .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
         );
         jPanel1Layout.setVerticalGroup(
             jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addGroup(jPanel1Layout.createSequentialGroup()
-                .addComponent(pnl_SharedFiles, javax.swing.GroupLayout.PREFERRED_SIZE, 137, javax.swing.GroupLayout.PREFERRED_SIZE)
+                .addComponent(pnl_SharedFiles, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jScrollPane5))
+                .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE))
         );
 
         jTabbedPane2.addTab("File Transfer", jPanel1);
 
-        jLabel1.setText("Server IP :");
+        jMenu1.setText("Connection");
 
-        jLabel2.setText("Server Port :");
-
-        btn_Connect.setText("Connect");
-        btn_Connect.addActionListener(new java.awt.event.ActionListener() {
-            public void actionPerformed(java.awt.event.ActionEvent evt) {
-                btn_ConnectActionPerformed(evt);
-            }
-        });
-
-        jLabel3.setText("Your Name :");
-
-        prg_connect.setMaximum(10000);
-
-        txt_port.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
-
-        jLabel4.setText("Your File Port :");
-
-        txt_filePort.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
-
-        javax.swing.GroupLayout jPanel3Layout = new javax.swing.GroupLayout(jPanel3);
-        jPanel3.setLayout(jPanel3Layout);
-        jPanel3Layout.setHorizontalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(prg_connect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(jLabel1)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_Ip, javax.swing.GroupLayout.PREFERRED_SIZE, 139, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel2)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_port, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(jLabel3)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 186, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(jLabel4)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                        .addComponent(txt_filePort, javax.swing.GroupLayout.PREFERRED_SIZE, 77, javax.swing.GroupLayout.PREFERRED_SIZE)
-                        .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.UNRELATED)
-                        .addComponent(btn_Connect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)))
-                .addContainerGap())
-        );
-        jPanel3Layout.setVerticalGroup(
-            jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel3Layout.createSequentialGroup()
-                .addContainerGap()
-                .addGroup(jPanel3Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-                    .addComponent(txt_Ip)
-                    .addComponent(txt_port)
-                    .addComponent(jLabel1, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel2, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addComponent(jLabel3, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                    .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, jPanel3Layout.createSequentialGroup()
-                        .addGap(0, 0, Short.MAX_VALUE)
-                        .addComponent(txt_name, javax.swing.GroupLayout.PREFERRED_SIZE, 35, javax.swing.GroupLayout.PREFERRED_SIZE))
-                    .addGroup(jPanel3Layout.createSequentialGroup()
-                        .addComponent(btn_Connect, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
-                        .addGap(2, 2, 2))
-                    .addComponent(txt_filePort)
-                    .addComponent(jLabel4, javax.swing.GroupLayout.Alignment.TRAILING, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE))
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(prg_connect, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE))
-        );
-
-        jMenu1.setText("Room");
-
-        menuItem_CreateRoom.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.CTRL_MASK));
+        menuItem_CreateRoom.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F2, java.awt.event.InputEvent.CTRL_MASK));
         menuItem_CreateRoom.setText("CreateServer");
         menuItem_CreateRoom.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -577,6 +509,15 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
             }
         });
         jMenu1.add(menuItem_CreateRoom);
+
+        jMenuItem1.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F3, java.awt.event.InputEvent.CTRL_MASK));
+        jMenuItem1.setText("Connect a Server");
+        jMenuItem1.addActionListener(new java.awt.event.ActionListener() {
+            public void actionPerformed(java.awt.event.ActionEvent evt) {
+                jMenuItem1ActionPerformed(evt);
+            }
+        });
+        jMenu1.add(jMenuItem1);
 
         menuItem_closeConnection.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_F4, java.awt.event.InputEvent.CTRL_MASK));
         menuItem_closeConnection.setText("Close Connection");
@@ -619,6 +560,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
 
         jMenu3.setText("File Transfer");
 
+        menuItem_OpenDownloadFolder.setAccelerator(javax.swing.KeyStroke.getKeyStroke(java.awt.event.KeyEvent.VK_D, java.awt.event.InputEvent.ALT_MASK | java.awt.event.InputEvent.CTRL_MASK));
         menuItem_OpenDownloadFolder.setText("Open Download Folder");
         menuItem_OpenDownloadFolder.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -671,15 +613,11 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         getContentPane().setLayout(layout);
         layout.setHorizontalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addComponent(jPanel3, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jTabbedPane2)
         );
         layout.setVerticalGroup(
             layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(javax.swing.GroupLayout.Alignment.TRAILING, layout.createSequentialGroup()
-                .addComponent(jPanel3, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
-                .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
-                .addComponent(jTabbedPane2))
+            .addComponent(jTabbedPane2)
         );
 
         pack();
@@ -691,45 +629,30 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
 
 
 
-    //Starts a new CreateNewServer instance. If there is a connection programm wil lask to disconnect.
-    // Listens CreateNewServer instance if a server created or canceled handles it.
+    //Starts a new Creator_Server instance. If there is a connection programm wil lask to disconnect.
+    // Listens Creator_Server instance if a server created or canceled handles it.
     private void menuItem_CreateRoomActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_menuItem_CreateRoomActionPerformed
 
     {//GEN-HEADEREND:event_menuItem_CreateRoomActionPerformed
         
         boolean isDisconnected = false;
-        if(this.sv != null)
+        if(this.sv != null || this.cl != null)
             isDisconnected = askAndDisconnect();
         else
             isDisconnected = true;
         
         if(isDisconnected)
         {
-            new Thread(new Runnable()
-            {
-                CreateNewServer svCreater = new CreateNewServer(Monitor.this);
+                    
+            svCreater.setLocationRelativeTo(FileChat.monitor);
+            SwingUtilities.invokeLater(new Runnable() {
                 @Override
-                public void run()
-                {
-                    svCreater.setLocationRelativeTo(FileChat.monitor);
+                public void run() {
                     svCreater.setVisible(true);
-                    while(true)
-                    {
-                        try {
-                            Thread.sleep(100);
-                            if(svCreater.isServerCreated)
-                            {
-                                svCreater.dispose();
-                                break;
-                            }
-                        }
-                        catch (InterruptedException ex) {
-                            Logger.getLogger(Monitor.class.getName()).log(Level.SEVERE, null, ex);
-                        }
-                    }
                 }
-            }).start();
+            });
         }
+        
         
     }//GEN-LAST:event_menuItem_CreateRoomActionPerformed
 
@@ -768,34 +691,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         }
     }//GEN-LAST:event_menuItem_ChangeNameActionPerformed
 
-    // Changes the user name on this app and server.
-    public void changeName(String name)
-    {
-        if(name != null && name.length() > USER_NAME_LENGTH_LIMIT)
-            name = name.substring(0,USER_NAME_LENGTH_LIMIT);
-        if(this.sv  != null)
-        {
-            String nameChangeString = "SERVER - "+this.sv.sName+ " Changed name to : ";
-            FileChat.monitor.fileSv.editSharedFile(sv.sName, name);
-            FileChat.monitor.sv.sendSystemMessageToAll(USER_REQUEST_TYPE_CHANGE_NAME, this.sv.sName+SYSTEM_MESSAGE_BRACKET+name);
-            this.sv.sName = name;
-            nameChangeString += name;
-            setMonitorTitle(sv.sName);
-            refreshClientNameList();
-            FileChat.monitor.sv.sendSystemMessageToAll(SYSTEM_MESSAGE_TYPE_REFRESH_USER_LIST, nameChangeString);
-            FileChat.monitor.fileSv.setFileServerOwner(name);
-            FileChat.monitor.refreshFileTable();
-            
-        }else if(this.cl != null)
-        {
-            this.cl.cName = name;
-            refreshClientNameList();
-            setMonitorTitle(cl.cName);
-            FileChat.monitor.cl.sendRequestMessage(USER_REQUEST_TYPE_CHANGE_NAME,name);
-            FileChat.monitor.fileSv.setFileServerOwner(name);
-        }
-    }
-
+   
 
     //Asks for new font and changes the message areas and users lists font.
     private void menuItem_ChangeFontActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_menuItem_ChangeFontActionPerformed
@@ -868,7 +764,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         refreshFileTable();
     }//GEN-LAST:event_btn_RefreshFileTableActionPerformed
     
-    //Opens a new CreateEditSharedFile instance.
+    //Opens a new Creator_SharedFileEditor instance.
     //Changes the new Shared file with old one and notices it to server.
     private void btn_EditFileActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btn_EditFileActionPerformed
     {//GEN-HEADEREND:event_btn_EditFileActionPerformed
@@ -880,7 +776,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
             if(sharedFiles != null && sharedFiles.length == 1 && fileSv.mySharedFiles.contains(sharedFiles[0]))
             {
 
-                CreateEditSharedFile crFile = fileSv.createEditSharedFile(sharedFiles[0]);
+                Creator_SharedFileEditor crFile = fileSv.createEditSharedFile(sharedFiles[0]);
                 crFile.setLocation(this.getLocation());
                 crFile.toFront();
                 new Thread(new Runnable()
@@ -994,15 +890,15 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         tbl_SharedFileTable.selectAll();
     }//GEN-LAST:event_btn_SelectAllActionPerformed
 
-    // Creates new CreateNewSharedFile instance.
+    // Creates new Creator_SharedFile instance.
     //Listens the instance.
     //If user shares a file sends notice to users.
-    //If its not does noting and CreateNewSharedFile instance will disposed.
+    //If its not does noting and Creator_SharedFile instance will disposed.
     private void btn_AddNewFileActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btn_AddNewFileActionPerformed
     {//GEN-HEADEREND:event_btn_AddNewFileActionPerformed
         if(sv != null || cl != null)
         {
-            CreateNewSharedFile crFile = fileSv.createAddNewSharedFile();
+            Creator_SharedFile crFile = fileSv.createAddNewSharedFile();
             crFile.setLocation(this.getLocation());
             crFile.toFront();
             new Thread(new Runnable()
@@ -1136,64 +1032,6 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         
     }//GEN-LAST:event_formWindowClosing
     
-    //Checks the values and connects to a server.
-    // Server ip and port must be known and true.
-    // If the user name , port server ip is empty or file port , server is not available it will not connect.
-    private void btn_ConnectActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_btn_ConnectActionPerformed
-    {//GEN-HEADEREND:event_btn_ConnectActionPerformed
-        if(btn_Connect.getText().equalsIgnoreCase("Connect"))
-        {
-            
-            if(!askAndDisconnect())
-                return;
-            
-            String ip = "";
-            int chatPort = 0;
-            int filePort = 0;
-            
-            ip = txt_Ip.getText();
-            if(ip == null || ip.isEmpty())
-            {
-                JOptionPane.showMessageDialog(jPanel3,"Please enter the ip adress !","No IP !",JOptionPane.WARNING_MESSAGE );
-                return;
-            }
-
-            
-            isRemoteConnection = Tool.isIpRemote(ip);
-            String chatPortStr = txt_port.getText();
-            String filePortStr = txt_filePort.getText();
-            if(chatPortStr == null || chatPortStr.isEmpty())
-            {
-                JOptionPane.showMessageDialog(jPanel3,"Please enter the port !","No PORT !",JOptionPane.WARNING_MESSAGE );
-                return;
-            }
-            
-            String name = txt_name.getText();
-            if(name == null || name.isEmpty())
-            {
-                JOptionPane.showMessageDialog(jPanel3,"Please enter your name !","No NAME !",JOptionPane.WARNING_MESSAGE );
-                return;
-            }
-            
-            try {
-                chatPort = Integer.parseInt(chatPortStr);
-                filePort = Integer.parseInt(filePortStr);
-            }
-            catch (Exception e) {
-                System.err.println("Parse error @PORT INPUT");
-            }
-
-            
-            connectServer(ip,chatPort,filePort,name.replaceAll(" ", "_"));
-            
-            
-            
-        }else
-        {
-            askAndDisconnect();
-        }
-    }//GEN-LAST:event_btn_ConnectActionPerformed
-
     //Changes the state of Override option.
     private void menuItem_OverrideDownloadedFilesActionPerformed(java.awt.event.ActionEvent evt)//GEN-FIRST:event_menuItem_OverrideDownloadedFilesActionPerformed
     {//GEN-HEADEREND:event_menuItem_OverrideDownloadedFilesActionPerformed
@@ -1262,106 +1100,46 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         askAndDisconnect();
     }//GEN-LAST:event_menuItem_closeConnectionActionPerformed
 
+    private void jMenuItem1ActionPerformed(java.awt.event.ActionEvent evt) {//GEN-FIRST:event_jMenuItem1ActionPerformed
+        SwingUtilities.invokeLater(new Runnable() {
+            @Override
+            public void run() {
+                createNewClientGui.setVisible(true);
+            }
+        });
+        createNewClientGui.setLocationRelativeTo(this);
+    }//GEN-LAST:event_jMenuItem1ActionPerformed
+
     //--------------Server & Client Connection Control Methods------------------
     //--------------------------------------------------------------------------
     
-    static int maxValue = 50;
-    static boolean isCreated = false;
-    /**Connects the server with given values.
-     * Checks the connection type by ip.
-     * If its a local connection checks the own file port if ist in use or not.
-     * If its a remote connection checks the own file port on router if its opened or not.
-     * If ports and server values available starts the client.
-     * @param ip Server ip
-     * @param chatPort Server chat port
-     * @param filePort Own file port
-     * @param name own user name
-     */
-    public void connectServer(String ip,int chatPort,int filePort,String name)
+     // Changes the user name on this app and server.
+    public void changeName(String name)
     {
-        
-        btn_Connect.setText("Disconnect");
-        txt_Ip.setEnabled(false);
-        txt_name.setEnabled(false);
-        txt_port.setEnabled(false);
-        txt_filePort.setEnabled(false);
-        
-        new Thread(new Runnable()
+        if(name != null && name.length() > USER_NAME_LENGTH_LIMIT)
+            name = name.substring(0,USER_NAME_LENGTH_LIMIT);
+        if(this.sv  != null)
         {
-            @Override
-            public void run()
-            {
-                while(FileChat.monitor.prg_connect.getValue() < prg_connect.getMaximum())
-                    {
-                    try {
-                        
-                        if(FileChat.monitor.prg_connect.getValue() < maxValue)
-                            FileChat.monitor.prg_connect.setValue(FileChat.monitor.prg_connect.getValue()+53);
-                        
-                            Thread.sleep(5L);
-                    }
-                    catch (Exception ex) {
-                        Logger.getLogger(Monitor.class.getName()).log(Level.SEVERE, null, ex);
-                    }
-                }
-            }
-        }).start();
-        
-        new Thread(new Runnable()
+            String nameChangeString = "SERVER - "+this.sv.sName+ " Changed name to : ";
+            FileChat.monitor.fileSv.editSharedFile(sv.sName, name);
+            FileChat.monitor.sv.sendSystemMessageToAll(USER_REQUEST_TYPE_CHANGE_NAME, this.sv.sName+SYSTEM_MESSAGE_BRACKET+name);
+            this.sv.sName = name;
+            nameChangeString += name;
+            setMonitorTitle(sv.sName);
+            refreshClientNameList();
+            FileChat.monitor.sv.sendSystemMessageToAll(SYSTEM_MESSAGE_TYPE_REFRESH_USER_LIST, nameChangeString);
+            FileChat.monitor.fileSv.setFileServerOwner(name);
+            FileChat.monitor.refreshFileTable();
+            
+        }else if(this.cl != null)
         {
-            @Override
-            public void run()
-            {
-                maxValue = 1500;
-                
-                int result = Tool.isAvailablePort(filePort);
-                if(Tool.SOCKET_IN_USE == result)
-                {
-                    JOptionPane.showMessageDialog(jPanel3,"File Port "+filePort+" Is Using By Another Program.. ","PORT In USE",JOptionPane.WARNING_MESSAGE );
-                    disconnect();
-                    return;
-                }else if(Tool.SOCKET_NOT_AVAILABLE == result)
-                {
-                    JOptionPane.showMessageDialog(jPanel3,"File Port "+filePort+" Is Not available For Remote Connect To Your Device ","PORT Is Not Available",JOptionPane.WARNING_MESSAGE );
-                    disconnect();
-                    return;
-                }
-                maxValue = 4000;
-                if(ip != null && !ip.isEmpty())
-                {
-                    try {
-                        btn_Connect.setEnabled(false);
-                        if(FileChat.monitor.sv != null || FileChat.monitor.cl != null)
-                        {
-                            disconnect();
-                            setup();
-                        }
-                        maxValue = 5250;
-                        try {
-                            FileChat.monitor.cl = new Client(ip,chatPort,filePort,name);
-                        }
-                        catch (Exception e) { btn_Connect.setEnabled(true);}
-                        
-                        maxValue = 7800;
-                        FileChat.monitor.fileSv = new FileServer(cl.cName,cl.cIp,""+cl.uploadPort);
-                        FileChat.monitor.cl.sendRequestMessage(USER_REQUEST_TYPE_SHARED_FILE_LIST, "");
-                        maxValue = 8860;
-                        FileChat.monitor. setMonitorTitle(cl.cName);
-                        maxValue = 9000;
-                        isCreated = true;
-                        btn_Connect.setEnabled(true);
-                        maxValue = 10000;
-                    }catch (Exception ex) {
-                        JOptionPane.showMessageDialog(FileChat.monitor, "Could not connected to : "+ip+" : "+chatPort);
-                        disconnect();
-                    }
-                }
-            }
-        }).start();
-        
-        maxValue = 10000;
+            this.cl.cName = name;
+            refreshClientNameList();
+            setMonitorTitle(cl.cName);
+            FileChat.monitor.cl.sendRequestMessage(USER_REQUEST_TYPE_CHANGE_NAME,name);
+            FileChat.monitor.fileSv.setFileServerOwner(name);
+        }
     }
-    
     
     /** Adds new message and refreshes the message area.
      @return*/
@@ -1496,7 +1274,6 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
      */
     public void setMonitorTitle(String name){
         String ip;
-        String svLocalIp = "";
         String port;
         String uploadPort;
         if(cl != null)
@@ -1507,24 +1284,16 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         }else if(sv != null)
         {
             ip = sv.sIp;
-            svLocalIp = "Local IP : ";
-            
-            try {
-                svLocalIp += Tool.getLocalIp();
-            }
-            catch (Exception e) {}
-                
             port = ""+sv.serverPort;
             uploadPort = ""+sv.uploadPort;
         }else
         {
             ip = "No Connection.";
-            svLocalIp = "";
             port = "-";
             uploadPort = "-";
         }
 
-        this.setTitle("FILE CHAT     ( "+name+"  IP : "+ip+" : "+port+"     /     "+svLocalIp+" Upload Port :"+uploadPort+" )");
+        this.setTitle("FILE CHAT "+(sv!=null ? "-SERVER-":"")+"    ( "+name+"  IP : "+ip+" : "+port+"     /     Your Upload Port :"+uploadPort+" )");
     }
 
     /**
@@ -1534,7 +1303,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
      * If there is no connection returns true.
      * @return 
      */
-    private boolean askAndDisconnect()
+    protected boolean askAndDisconnect()
     {
         int selection = JOptionPane.NO_OPTION;
         if(this.sv != null || this.cl != null)
@@ -1544,10 +1313,6 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         if(selection == JOptionPane.YES_OPTION)
         {
             disconnect();
-            btn_Connect.setText("Connect");
-            txt_Ip.setEnabled(true);
-            txt_name.setEnabled(true);
-            txt_port.setEnabled(true);
             return true;
         }
         return false;
@@ -1579,21 +1344,19 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
             {
                 this.sv.closeServer();
                 this.sv = null;
+                
+                if(svCreater != null)
+                    svCreater.isServerCreated = false;
             }
             
             if(this.cl != null)
             {
                 this.cl.closeClient();
                 this.cl = null;
+                
+                if(createNewClientGui != null)
+                    createNewClientGui.setup();
             }
-            
-            btn_Connect.setText("Connect");
-            btn_Connect.setEnabled(true);
-            txt_Ip.setEnabled(true);
-            txt_name.setEnabled(true);
-            txt_port.setEnabled(true);
-            txt_filePort.setEnabled(true);
-            prg_connect.setValue(0);
             
             System.out.println("Sending disconnect message... \nBye Bye ...");
         }
@@ -2185,23 +1948,18 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
     
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btn_AddNewFile;
-    private javax.swing.JButton btn_Connect;
     private javax.swing.JButton btn_DeleteFile;
     private javax.swing.JButton btn_DownloadFile;
     private javax.swing.JButton btn_EditFile;
     private javax.swing.JButton btn_RefreshFileTable;
     private javax.swing.JButton btn_SelectAll;
     private javax.swing.JComboBox<String> cmb_SearchType;
-    private javax.swing.JLabel jLabel1;
-    private javax.swing.JLabel jLabel2;
-    private javax.swing.JLabel jLabel3;
-    private javax.swing.JLabel jLabel4;
     private javax.swing.JMenu jMenu1;
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
+    private javax.swing.JMenuItem jMenuItem1;
     private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
-    private javax.swing.JPanel jPanel3;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
     private javax.swing.JScrollPane jScrollPane3;
@@ -2225,18 +1983,13 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
     private javax.swing.JPanel pnl_Chat;
     private javax.swing.JPanel pnl_DownUPView;
     private javax.swing.JPanel pnl_SharedFiles;
-    private javax.swing.JProgressBar prg_connect;
     private javax.swing.JProgressBar prg_upload_all;
     private javax.swing.JProgressBar prg_upload_curr;
     private javax.swing.JButton sndButton;
     private javax.swing.JTable tbl_SharedFileTable;
     private javax.swing.JTextArea txtArea_MessageStore;
     private javax.swing.JTextArea txtArea_NewNessage;
-    private javax.swing.JTextField txt_Ip;
     private javax.swing.JTextField txt_SharedFileSearchText;
-    private javax.swing.JFormattedTextField txt_filePort;
-    private javax.swing.JTextField txt_name;
-    private javax.swing.JFormattedTextField txt_port;
     // End of variables declaration//GEN-END:variables
 
 }

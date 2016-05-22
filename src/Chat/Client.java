@@ -6,8 +6,11 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
+import java.net.InetAddress;
 import java.net.Socket;
+import java.net.SocketAddress;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -49,13 +52,14 @@ public class Client implements Runnable,FileChatConstants
         
         try {
             cSocket = new Socket(this.serverIp,this.serverChatPort);
-            this.cIp = Tool.IPCheck();
+            this.cIp = cSocket.getLocalSocketAddress().toString().split(":")[0].substring(1);
+            System.out.println("Client created : "+cSocket.getLocalSocketAddress());
             if(cIp == null)
                 throw new Exception("Unknown Host ! Cant create Client...");
             cOut = new PrintWriter(cSocket.getOutputStream(),true);
             cIn = new BufferedReader(
                     new InputStreamReader(cSocket.getInputStream()));
-            
+            cSocket.setSoTimeout(7000);
             
             String welcomeMessage = cIn.readLine();
             if(welcomeMessage.equals(SYSTEM_MESSAGE_WELLCOME))
@@ -77,7 +81,7 @@ public class Client implements Runnable,FileChatConstants
                 return;
             }
             
-            
+            cSocket.setSoTimeout(0);
             
             new Thread(this).start(); // Starts to reading messages from server.
             
@@ -125,7 +129,7 @@ public class Client implements Runnable,FileChatConstants
     public void run()
     {
         String message;
-        System.out.println("Name of Client is :"+cName);
+        System.out.println("Client running. Name of Client is :"+cName);
         
         while (!endClient) {//Reads message from server until get an exception.
             try {

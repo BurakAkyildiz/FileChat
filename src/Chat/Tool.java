@@ -3,18 +3,15 @@ package Chat;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.net.Inet4Address;
 import java.net.Inet6Address;
 import java.net.InetAddress;
-import java.net.InetSocketAddress;
 import java.net.NetworkInterface;
 import java.net.ServerSocket;
 import java.net.Socket;
 import java.net.SocketException;
-import java.net.SocketOptions;
 import java.net.URL;
 import java.net.UnknownHostException;
-import java.nio.channels.SocketChannel;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Enumeration;
 import java.util.Scanner;
@@ -31,8 +28,8 @@ import javax.swing.text.PlainDocument;
  */
 public class Tool implements FileChatConstants
 {
-    public static String savedLocalIP = null;
-    public static String savedRemoteIP = null;
+    public static boolean isHaveLocalIP = false;
+    public static boolean isHaveRemoteIP = false;
     /**
      * Checks if text is numeric or not.
      * ( it can be double number.)
@@ -53,14 +50,14 @@ public class Tool implements FileChatConstants
     
     
     
-    /**Returns ip of this machine.
-     * If the connection type is defined local on FileChat.Monitor.isRemoteConnection returns first local ip.
+    /**Returns ips of this machine.
+     * If the connection type is defined local on FileChat.Monitor.isRemoteConnection returns first local ips.
      * If its remote connection returns remote ip.
      * If there is no connection returns null.
      */
-    public static String IPCheck()
+    public static ArrayList<String> IPCheck()
     {
-        String ip = null;
+        ArrayList<String> ip  = null;
         try
         {
             if(checkInternetConnection() && FileChat.monitor != null && FileChat.monitor.isRemoteConnection)
@@ -111,56 +108,19 @@ public class Tool implements FileChatConstants
    
     
     /**
-     * Returns the first local ip adress.
+     * Returns all available local addresses.
      * @return
      * @throws UnknownHostException 
      */
-    public static String getLocalIp() throws UnknownHostException
+    public static ArrayList<String> getLocalIp() throws UnknownHostException
     {
-        if(savedLocalIP != null && !savedLocalIP.isEmpty())
-            return savedLocalIP;
-        String ip = null;
+        Tool.isHaveLocalIP = false;
+        ArrayList<String> ip = new ArrayList<String>();
         try {
-            
-            /*Process p;
-            try {
-            p = Runtime.getRuntime().exec("cmd /c ipconfig");
-            
-            Scanner oku = new Scanner(p.getInputStream(), "UTF-8");
-            while (oku.hasNextLine())
-            {
-            String line = oku.nextLine();
-            //System.out.println(line);
-            if (line.contains("IPv4"))
-            {
-            String tok[] = line.split(":");
-            ip = tok[1].trim();
-            }
-            }
-            }
-            catch (IOException ex) {
-            Logger.getLogger(Tool.class.getName()).log(Level.SEVERE, null, ex);
-            }
-            return ip;*/
-            //return InetAddress.getLocalHost().getHostAddress();
-            
-            /*try {
-            Enumeration interfaces = NetworkInterface.getNetworkInterfaces();
-            while (interfaces.hasMoreElements()) {
-            NetworkInterface interf = (NetworkInterface) interfaces.nextElement();
-            if (interf.isUp() && !interf.isLoopback()) {
-            ip = (""+interf.getInetAddresses().nextElement()).substring(1);
-            }
-            }
-            } catch (SocketException ex) {
-            Logger.getLogger(Tool.class.getName()).log(Level.SEVERE, null, ex);
-            }*/
-            
-            
             
             // iterate over the network interfaces known to java
             Enumeration<NetworkInterface> interfaces = NetworkInterface.getNetworkInterfaces();
-            OUTER : for (NetworkInterface interface_ : Collections.list(interfaces)) {
+            for (NetworkInterface interface_ : Collections.list(interfaces)) {
               // we shouldn't care about loopback addresses
               if (interface_.isLoopback())
                 continue;
@@ -184,19 +144,39 @@ public class Tool implements FileChatConstants
                 Socket socket = null;
                 try
                 {
-                  socket = new Socket(addresses.toString().substring(1), 80, address, 8080);
+                
+                ServerSocket ssoc = new ServerSocket(0,5,address);
+                new Thread(new Runnable() {
                     
-                  socket.setSoTimeout(3000);
+                    @Override
+                    public void run() {
+                        
+                        try {
+                            
+                            ssoc.setSoTimeout(10000);
+                            ssoc.accept();
+                            ssoc.close();
+                        } catch (Exception ex) {
+                            Logger.getLogger(Tool.class.getName()).log(Level.SEVERE, null, ex);
+                        }finally{
+                            try {
+                                ssoc.close();
+                            } catch (IOException ex) {}
+                        }
+                    }
+                }).start();
+                
+                Thread.sleep(500);
+                socket = new Socket(address.toString().substring(1).trim(), ssoc.getLocalPort(),address,0);
+                ip.add(address.toString().substring(1));
                 } catch (Exception ex) {
-                    //ex.printStackTrace();
+                    ex.printStackTrace();
                     if(socket != null && !socket.isClosed())
+                        socket.close();
                   continue;
                 }
-                
-                ip = (""+ address).substring(1);
-                savedLocalIP = ip;
                 // stops at the first *working* solution
-                break OUTER;
+                
               }
             }
             
@@ -205,9 +185,13 @@ public class Tool implements FileChatConstants
         } catch (IOException ex) {
             Logger.getLogger(Tool.class.getName()).log(Level.SEVERE, null, ex);
         }
+        
+        if(ip.size() == 0 )
+            return null;
+        
+        Tool.isHaveLocalIP = true;
         return ip;
     }
-    
     
     /**
      * Checks the internet connection. If there is a connection returns true
@@ -232,16 +216,17 @@ public class Tool implements FileChatConstants
       * Returns the remote ip of this machine.
       * @return 
       */
-    public static String readIP()  {
+    public static ArrayList<String> readIP()  {
         
-        if(savedRemoteIP != null && !savedRemoteIP.isEmpty())
-            return savedRemoteIP;
         try {
+            Tool.isHaveRemoteIP = false;
             URL myIP = new URL("http://icanhazip.com/");
             BufferedReader in = new BufferedReader(new InputStreamReader(myIP.openStream()));
             String ip = in.readLine();
-            savedRemoteIP = ip;
-            return ip;
+            ArrayList<String> ipList = new ArrayList<String>();
+            ipList.add(ip);
+            Tool.isHaveRemoteIP = true;
+            return ipList;
         }
         catch (Exception e) {
             System.err.println("Exception on readIP (Network Connection Problem) :"+e.getMessage());
@@ -304,7 +289,7 @@ public class Tool implements FileChatConstants
      * @param port
      * @return 
      */
-    public static int isAvailablePort(int port) {
+    public static int isAvailablePort(String ip,int port) {
         try {
             sSock = new ServerSocket(port);
             sSock.setSoTimeout(CHECK_WAIT_TIME);
@@ -358,7 +343,6 @@ public class Tool implements FileChatConstants
                 }else
                 {
                     Thread.sleep(500L);
-                    String ip = IPCheck();
                     if(ip == null)
                     {
                         try {

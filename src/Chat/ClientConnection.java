@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import static Chat.FileChatConstants.*;
+import java.util.List;
 
 /**
  * This class handles connected users work on server side.
@@ -264,7 +265,7 @@ public class ClientConnection extends Thread implements FileChatConstants
             }
             case USER_REQUEST_TYPE_SHARED_FILE_LIST: // Sends shared file list to defined client.
             {
-                ArrayList<SharedFile> shList = FileChat.monitor.fileSv.getSharedFileList();
+                List<SharedFile> shList = FileChat.monitor.fileSv.getSharedFileList();
                 for (SharedFile sh : shList) {
                     this.cOut.println( USER_REQUEST_NEW_SHAREDFILE+SharedFile.toMessageString(sh) );
                 }

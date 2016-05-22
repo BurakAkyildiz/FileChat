@@ -2,6 +2,8 @@ package FileShare;
 
 import Chat.SharedFile;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.List;
 
 /**
  * This class operates the requested downloads and uploads at the same time.
@@ -10,7 +12,7 @@ import java.util.ArrayList;
  */
 public class FileServer
 {   
-    private ArrayList<SharedFile> sharedFileList; // All shared files list.
+    private List<SharedFile> sharedFileList; // All shared files list.
     public ArrayList<SharedFile> mySharedFiles; // Self shared files list.
     public Uploader uploader;
     public Downloader downloader;
@@ -22,21 +24,22 @@ public class FileServer
     
     public FileServer(String fileServerOwner,String fileServerIp, String fileServerSendPort)
     {
-        this.sharedFileList = new ArrayList<>();
+        this.sharedFileList = Collections.synchronizedList(new ArrayList<SharedFile>());
         this.uploader = new Uploader(fileServerOwner,fileServerIp,fileServerSendPort);
         this.downloader = new Downloader(fileServerOwner,fileServerIp,fileServerSendPort);
         this.fileServerIp = fileServerIp;
         this.fileServerSendPort = ""+fileServerSendPort;
         this.fileServerOwner = fileServerOwner;
         this.mySharedFiles = new ArrayList<>();
+        System.out.println("File server Created (Owner :"+fileServerOwner+" IP :"+fileServerIp+" Port :"+fileServerSendPort+")");
     }
     /**
-     * Creates new CreateNewSharedFile instance with own user informations.
+     * Creates new Creator_SharedFile instance with own user informations.
      * @return 
      */
-    public CreateNewSharedFile createAddNewSharedFile()
+    public Creator_SharedFile createAddNewSharedFile()
     {
-        CreateNewSharedFile fileCreater = new CreateNewSharedFile(
+        Creator_SharedFile fileCreater = new Creator_SharedFile(
                                         this,
                                         fileServerOwner,
                                         fileServerIp,
@@ -55,13 +58,13 @@ public class FileServer
     }
     
     /**
-     * Creates new CreateEditSharedFile instance with own user informations.
+     * Creates new Creator_SharedFileEditor instance with own user informations.
      * @param oldSharedFile
      * @return 
      */
-    public CreateEditSharedFile createEditSharedFile(SharedFile oldSharedFile)
+    public Creator_SharedFileEditor createEditSharedFile(SharedFile oldSharedFile)
     {
-        CreateEditSharedFile fileEdit = new CreateEditSharedFile(
+        Creator_SharedFileEditor fileEdit = new Creator_SharedFileEditor(
                                         this,
                                         oldSharedFile);
         
@@ -89,13 +92,15 @@ public class FileServer
     public void editSharedFile(String oldName,String newName)
     {
         try {
-            for (int i = 0; i < sharedFileList.size(); i++) {
+            int size = sharedFileList.size();
+            for (int i = 0; i < size; i++) {
                 if(sharedFileList.get(i).getOwnerNick().equals(oldName))
                 {
                     SharedFile newFile = sharedFileList.get(i);
                     newFile.setOwnerNick(newName);
                     System.out.println("FileSv edited file :"+sharedFileList.get(i).getId()+" to : "+newFile);
                     editSharedFile(sharedFileList.get(i).getId(),newFile);
+                    editSharedFile(oldName, newName);
                     break;
                 }
             }
@@ -124,6 +129,7 @@ public class FileServer
                 uploader.removeUpload(oldId);
                 mySharedFiles.remove(delFile);
                 sharedFileList.remove(delFile);
+                System.out.println("Deleting shared file : "+delFile);
             }
         }
         catch (Exception e) {
@@ -143,11 +149,13 @@ public class FileServer
     public void removeUsersFiles(String name, String ip, String port)
     {
         try {
-            for (int i = 0; i < sharedFileList.size(); i++) {
+            int size = sharedFileList.size();
+            for (int i = 0; i < size; i++) {
                 if(sharedFileList.get(i).getOwnerNick().equals(name) || (sharedFileList.get(i).getOwnerIp().equals(ip) && sharedFileList.get(i).getOwnerPort().equals(port)))
                 {
-                    System.out.println("Deleting shared file : "+sharedFileList.get(i).toString());
                     deleteSharedFile(""+sharedFileList.get(i).getId());
+                    removeUsersFiles(name, ip, port);
+                    break;
                 }
             }
         }
@@ -206,7 +214,7 @@ public class FileServer
     }
     
     
-    public ArrayList<SharedFile> getSharedFileList()
+    public List<SharedFile> getSharedFileList()
     {
         return sharedFileList;
     }

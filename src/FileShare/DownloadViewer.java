@@ -55,6 +55,7 @@ public class DownloadViewer extends javax.swing.JPanel implements Observer
     {
         setShareInfo("SHARE NAME : "+downFile.getName()+" ["+downFile.getOwnerNick()+"]");
         setNotification(downFile.getNotification());
+        myFileParentPath = DownloadPropertiyTools.getNewParentDownloadFolderPath(downFile.getName());
         if(downloadedMap != null)
         {
             downloadedMap.clear();
