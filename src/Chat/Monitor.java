@@ -151,7 +151,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         list_OnlineUser = new javax.swing.JList<>();
         jScrollPane3 = new javax.swing.JScrollPane();
         txtArea_NewNessage = new javax.swing.JTextArea();
-        jPanel1 = new javax.swing.JPanel();
+        pnl_FileChat = new javax.swing.JPanel();
         pnl_SharedFiles = new javax.swing.JPanel();
         btn_AddNewFile = new javax.swing.JButton();
         btn_SelectAll = new javax.swing.JButton();
@@ -431,7 +431,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
             }
         ) {
             boolean[] canEdit = new boolean [] {
-                false, true, false, true, false, true
+                false, false, false, false, false, false
             };
 
             public boolean isCellEditable(int rowIndex, int columnIndex) {
@@ -479,17 +479,17 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
 
         jScrollPane5.setViewportView(pnl_DownUPView);
 
-        javax.swing.GroupLayout jPanel1Layout = new javax.swing.GroupLayout(jPanel1);
-        jPanel1.setLayout(jPanel1Layout);
-        jPanel1Layout.setHorizontalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+        javax.swing.GroupLayout pnl_FileChatLayout = new javax.swing.GroupLayout(pnl_FileChat);
+        pnl_FileChat.setLayout(pnl_FileChatLayout);
+        pnl_FileChatLayout.setHorizontalGroup(
+            pnl_FileChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
             .addComponent(pnl_SharedFiles, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, Short.MAX_VALUE)
             .addComponent(jScrollPane4)
             .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 800, Short.MAX_VALUE)
         );
-        jPanel1Layout.setVerticalGroup(
-            jPanel1Layout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
-            .addGroup(jPanel1Layout.createSequentialGroup()
+        pnl_FileChatLayout.setVerticalGroup(
+            pnl_FileChatLayout.createParallelGroup(javax.swing.GroupLayout.Alignment.LEADING)
+            .addGroup(pnl_FileChatLayout.createSequentialGroup()
                 .addComponent(pnl_SharedFiles, javax.swing.GroupLayout.PREFERRED_SIZE, javax.swing.GroupLayout.DEFAULT_SIZE, javax.swing.GroupLayout.PREFERRED_SIZE)
                 .addPreferredGap(javax.swing.LayoutStyle.ComponentPlacement.RELATED)
                 .addComponent(jScrollPane4, javax.swing.GroupLayout.PREFERRED_SIZE, 210, javax.swing.GroupLayout.PREFERRED_SIZE)
@@ -497,7 +497,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
                 .addComponent(jScrollPane5, javax.swing.GroupLayout.DEFAULT_SIZE, 186, Short.MAX_VALUE))
         );
 
-        jTabbedPane2.addTab("File Transfer", jPanel1);
+        jTabbedPane2.addTab("File Transfer", pnl_FileChat);
 
         jMenu1.setText("Connection");
 
@@ -588,7 +588,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
         jMenu3.add(jSeparator3);
 
         menuItem_OverrideDownloadedFiles.setSelected(true);
-        menuItem_OverrideDownloadedFiles.setText("Override Downloaded Files");
+        menuItem_OverrideDownloadedFiles.setText("Update Files On Download");
         menuItem_OverrideDownloadedFiles.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
                 menuItem_OverrideDownloadedFilesActionPerformed(evt);
@@ -1171,7 +1171,6 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
             refreshMessageAreaTh = null;
             
         }
-        
         refreshMessageAreaTh = new Thread(new Runnable()
         {
             @Override
@@ -1958,7 +1957,6 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
     private javax.swing.JMenu jMenu3;
     private javax.swing.JMenuBar jMenuBar1;
     private javax.swing.JMenuItem jMenuItem1;
-    private javax.swing.JPanel jPanel1;
     private javax.swing.JPanel jPanel2;
     private javax.swing.JScrollPane jScrollPane1;
     private javax.swing.JScrollPane jScrollPane2;
@@ -1982,6 +1980,7 @@ public class Monitor extends javax.swing.JFrame implements FileChatConstants
     private javax.swing.JMenuItem menuItem_closeConnection;
     private javax.swing.JPanel pnl_Chat;
     private javax.swing.JPanel pnl_DownUPView;
+    private javax.swing.JPanel pnl_FileChat;
     private javax.swing.JPanel pnl_SharedFiles;
     private javax.swing.JProgressBar prg_upload_all;
     private javax.swing.JProgressBar prg_upload_curr;

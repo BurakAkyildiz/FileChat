@@ -124,7 +124,7 @@ public class Creator_SharedFileEditor extends javax.swing.JFrame
         txtArea_ShareNote.setWrapStyleWord(true);
         jScrollPane1.setViewportView(txtArea_ShareNote);
 
-        btn_SelectFile.setText("Press to Select A File Or A Folder");
+        btn_SelectFile.setText("Press to Select  Files Or  Folders");
         btn_SelectFile.setToolTipText("Selected files or selected folder");
         btn_SelectFile.addActionListener(new java.awt.event.ActionListener() {
             public void actionPerformed(java.awt.event.ActionEvent evt) {
@@ -150,7 +150,7 @@ public class Creator_SharedFileEditor extends javax.swing.JFrame
 
         txt_parentFolder.setEditable(false);
 
-        jLabel6.setText("Size (BYTE)       :");
+        jLabel6.setText("Size                    :");
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());
         getContentPane().setLayout(layout);

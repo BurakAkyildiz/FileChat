@@ -102,6 +102,7 @@
     </Component>
     <Component class="javax.swing.JTextField" name="txt_ServerName">
       <Properties>
+        <Property name="toolTipText" type="java.lang.String" value="Server Name"/>
         <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
           <ComponentRef name="cmb_ConnectionType"/>
         </Property>
@@ -146,6 +147,7 @@
         <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
           <Format format="#0" subtype="-1" type="0"/>
         </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Select Server Port"/>
         <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
           <ComponentRef name="txt_ServerFilePort"/>
         </Property>
@@ -175,6 +177,7 @@
         <Property name="formatterFactory" type="javax.swing.JFormattedTextField$AbstractFormatterFactory" editor="org.netbeans.modules.form.editors.AbstractFormatterFactoryEditor">
           <Format format="#0" subtype="-1" type="0"/>
         </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Select Your File Port"/>
         <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
           <ComponentRef name="btn_createServer"/>
         </Property>
@@ -190,6 +193,7 @@
             <StringItem index="0" value="No IP !"/>
           </StringArray>
         </Property>
+        <Property name="toolTipText" type="java.lang.String" value="Select Your Server IP"/>
         <Property name="nextFocusableComponent" type="java.awt.Component" editor="org.netbeans.modules.form.ComponentChooserEditor">
           <ComponentRef name="txt_ServerPort"/>
         </Property>

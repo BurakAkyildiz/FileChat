@@ -321,6 +321,7 @@ public class Creator_Server extends javax.swing.JDialog
 
         jLabel1.setText("Server Name :");
 
+        txt_ServerName.setToolTipText("Server Name");
         txt_ServerName.setNextFocusableComponent(cmb_ConnectionType);
         txt_ServerName.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -338,6 +339,7 @@ public class Creator_Server extends javax.swing.JDialog
         cmb_ConnectionType.setNextFocusableComponent(cmb_Ip);
 
         txt_ServerPort.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        txt_ServerPort.setToolTipText("Select Server Port");
         txt_ServerPort.setNextFocusableComponent(txt_ServerFilePort);
         txt_ServerPort.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -352,6 +354,7 @@ public class Creator_Server extends javax.swing.JDialog
         jLabel6.setText("Server File Port :");
 
         txt_ServerFilePort.setFormatterFactory(new javax.swing.text.DefaultFormatterFactory(new javax.swing.text.NumberFormatter(new java.text.DecimalFormat("#0"))));
+        txt_ServerFilePort.setToolTipText("Select Your File Port");
         txt_ServerFilePort.setNextFocusableComponent(btn_createServer);
         txt_ServerFilePort.addKeyListener(new java.awt.event.KeyAdapter() {
             public void keyTyped(java.awt.event.KeyEvent evt) {
@@ -360,6 +363,7 @@ public class Creator_Server extends javax.swing.JDialog
         });
 
         cmb_Ip.setModel(new javax.swing.DefaultComboBoxModel<>(new String[] { "No IP !" }));
+        cmb_Ip.setToolTipText("Select Your Server IP");
         cmb_Ip.setNextFocusableComponent(txt_ServerPort);
 
         javax.swing.GroupLayout layout = new javax.swing.GroupLayout(getContentPane());

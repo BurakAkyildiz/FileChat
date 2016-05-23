@@ -137,7 +137,7 @@
     </Container>
     <Component class="javax.swing.JButton" name="btn_SelectFile">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Press to Select A File Or A Folder"/>
+        <Property name="text" type="java.lang.String" value="Press to Select  Files Or  Folders"/>
         <Property name="toolTipText" type="java.lang.String" value="Selected files or selected folder"/>
       </Properties>
       <Events>
@@ -195,7 +195,7 @@
     </Component>
     <Component class="javax.swing.JLabel" name="jLabel6">
       <Properties>
-        <Property name="text" type="java.lang.String" value="Size (BYTE)       :"/>
+        <Property name="text" type="java.lang.String" value="Size                    :"/>
       </Properties>
     </Component>
     <Component class="javax.swing.JLabel" name="lbl_Size">
